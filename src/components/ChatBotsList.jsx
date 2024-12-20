@@ -8,22 +8,35 @@ import { Link } from 'react-router-dom';
 const ChatBotsList = () => {
     const wordLimit = 30; // Adjust this value to control the number of words shown
     const [chatbots, setChatbots] = useState([]);
-    
-    
+    const [loadingBot, setLoadingBot] = useState(true);
+    const [error, setError] = useState(null);
+
     useEffect(() => {
         const fetchChatbots = async () => {
             try {
-                const response = await fetch('http://127.0.0.1:8000/get_all_bots');
+                const response = await fetch('https://chat-persona-ai-ov46.vercel.app/get_all_bots');
                 const data = await response.json();
                 setChatbots(data.bots);  // Update the state with the fetched data
                 console.log(data)
-            } catch (error) {
-                console.error('Error fetching chatbots data:', error);
-            }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoadingBot(false);
+              }
         };
 
         fetchChatbots();
     }, []);
+
+    // Handle loading and errors
+  if (loadingBot) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  
+  }
     // const truncatedDescription = bot.description.split(' ').slice(0, wordLimit).join(' ') + (bot.description.split(' ').length > wordLimit ? '...' : '');
     return (
         <div className="">
